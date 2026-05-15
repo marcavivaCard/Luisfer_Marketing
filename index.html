@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta de Presentación Digital - Luis Fernando Obando</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f4e9e1;
+        }
+        .font-serif-elegant {
+            font-family: 'Playfair Display', serif;
+        }
+        .card-container {
+            max-width: 400px;
+            margin: 0 auto;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(180deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,1) 30%);
+            border: 1px solid #d1d5db;
+            position: relative;
+        }
+        .profile-img-container {
+            width: 140px;
+            height: 140px;
+            border: 5px solid white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border-radius: 50%;
+            z-index: 10;
+            position: relative;
+            background-color: #e5e7eb;
+        }
+        
+        .contact-icon {
+            position: absolute;
+            top: 179px; 
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+            z-index: 30;
+            transition: transform 0.2s ease;
+        }
+        .contact-icon:hover { transform: scale(1.1); }
+        .btn-whatsapp { background-color: #25D366; left: 19px; }
+        .btn-phone { background-color: #3b82f6; right: 19px; }
+
+        .btn-custom-color {
+            background-color: #90a4ff;
+            color: #000000;
+            transition: all 0.3s ease;
+        }
+        .btn-custom-color:hover {
+            filter: brightness(1.05);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(144, 164, 255, 0.3);
+        }
+        .btn-custom-color svg {
+            color: #000000 !important;
+            stroke: #000000 !important;
+        }
+
+        .btn-action { transition: all 0.3s ease; }
+        .btn-action:active { transform: scale(0.95); }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 24px;
+            border-radius: 24px;
+            width: 95%;
+            max-width: 380px;
+            position: relative;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        /* Carrusel Styles */
+        .carousel-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+            border-radius: 16px;
+        }
+        .carousel-container {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            width: 100%;
+        }
+        .carousel-slide {
+            min-width: 100%;
+            aspect-ratio: 1/1;
+        }
+        .carousel-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.8);
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+        }
+        .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d1d5db;
+            transition: background 0.3s;
+        }
+        .dot.active { background: #6366f1; }
+
+        /* Calendar Styles */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        .calendar-day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #374151;
+        }
+        .calendar-day:hover:not(.empty) { background-color: #f3f4f6; }
+        .calendar-day.selected { background-color: #6366f1 !important; color: white !important; font-weight: bold; }
+        .calendar-day.today { border: 2px solid #90a4ff; font-weight: bold; }
+        .calendar-day.empty { cursor: default; }
+
+        .time-slot {
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .time-slot:hover { border-color: #6366f1; background-color: #f5f3ff; }
+        .time-slot.selected { background-color: #6366f1; color: white; border-color: #6366f1; }
+    </style>
+</head>
+<body class="p-4">
+
+    <div class="card-container rounded-3xl overflow-hidden mt-10">
+        <!-- Banner -->
+        <div class="h-40 bg-cover bg-center" style="background-image: url('https://i.postimg.cc/yYx3FPqG/Chat-GPT-Image-15-may-2026-08-46-45.png');"></div>
+        
+        <!-- Quick Contacts -->
+        <a href="https://wa.me/573178018593" target="_blank" class="contact-icon btn-whatsapp" title="WhatsApp">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+        </a>
+
+        <a href="tel:3178018593" class="contact-icon btn-phone" title="Llamar">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+        </a>
+
+        <!-- Content -->
+        <div class="px-6 pb-8 pt-4 text-center">
+            <div class="relative inline-block mt-[-70px] mb-4">
+                <div class="profile-img-container mx-auto">
+                    <img src="https://i.postimg.cc/nz90cGSy/Chat-GPT-Image-21-abr-2026-17-41-58.png" 
+                         onerror="this.src='https://ui-avatars.com/api/?name=Luis+Fernando&background=6366f1&color=fff&size=140'" 
+                         alt="Luis Fernando Obando" 
+                         class="w-full h-full object-cover">
+                </div>
+            </div>
+
+            <h1 class="font-serif-elegant text-2xl font-bold text-gray-800">Luis Fernando Obando</h1>
+            <p class="text-indigo-600 font-semibold tracking-wider text-[11px] uppercase mb-1">Consultor Digital & Estratega</p>
+            <p class="text-gray-500 font-medium text-[12px] italic mb-4">Fundador de la agencia Marca Viva Studio</p>
+            
+            <p class="text-gray-600 text-sm mb-4 leading-relaxed">
+                Estrategia, creatividad y propósito para marcas que quieren trascender.
+            </p>
+
+            <!-- Main Actions -->
+            <div class="grid grid-cols-1 gap-3 mb-6">
+                <!-- Botón de Facebook Fanpage -->
+                <a href="https://www.facebook.com/profile.php?id=61585369619919" target="_blank" class="btn-action bg-[#1877F2] text-white py-3 px-6 rounded-2xl font-bold shadow-md flex items-center justify-center space-x-3 w-full">
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+                    <span>VISITAR FANPAGE</span>
+                </a>
+
+                <button id="save-contact-btn" class="btn-action bg-indigo-600 text-white py-4 px-6 rounded-2xl font-bold shadow-lg flex items-center justify-center space-x-3 w-full">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                    <span>GUARDAR CONTACTO</span>
+                </button>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="services-btn" class="btn-action btn-custom-color py-3 px-4 rounded-xl font-semibold flex flex-col items-center justify-center shadow-sm">
+                        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <span class="text-xs">Servicios</span>
+                    </button>
+                    <button id="gallery-btn" class="btn-action btn-custom-color py-3 px-4 rounded-xl font-semibold flex flex-col items-center justify-center shadow-sm">
+                        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-xs">Galería</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <button id="agendamiento-btn" class="btn-action btn-custom-color py-3 px-4 rounded-xl font-semibold flex flex-col items-center justify-center shadow-sm">
+                        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span class="text-xs">Agendar</span>
+                    </button>
+                    <button id="qr-btn" class="btn-action btn-custom-color py-3 px-4 rounded-xl font-semibold flex flex-col items-center justify-center shadow-sm">
+                        <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01"></path></svg>
+                        <span class="text-xs">Código QR</span>
+                    </button>
+                </div>
+
+                <!-- Botón de Correo Electrónico -->
+                <a href="mailto:trinitario14fer333@gmail.com" class="btn-action bg-white border border-indigo-100 text-gray-700 py-3 px-4 rounded-2xl font-medium shadow-sm flex items-center justify-center space-x-2 w-full mt-1">
+                    <svg class="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                    <span class="text-sm">trinitario14fer333@gmail.com</span>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="services-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="font-serif-elegant text-2xl font-bold mb-6 text-indigo-700 text-center border-b pb-4">Nuestros Servicios</h2>
+            <div class="space-y-4 mb-8">
+                <div class="flex items-center space-x-3 p-3 bg-indigo-50 rounded-xl">
+                    <div class="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                    <span class="font-semibold text-gray-800">Branding Estratégico</span>
+                </div>
+                <div class="flex items-center space-x-3 p-3 bg-indigo-50 rounded-xl">
+                    <div class="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                    <span class="font-semibold text-gray-800">Producción Publicitaria</span>
+                </div>
+                <div class="flex items-center space-x-3 p-3 bg-indigo-50 rounded-xl">
+                    <div class="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                    <span class="font-semibold text-gray-800">Contenido para Redes</span>
+                </div>
+                <div class="flex items-center space-x-3 p-3 bg-indigo-50 rounded-xl">
+                    <div class="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                    <span class="font-semibold text-gray-800">Marketing Digital</span>
+                </div>
+                <div class="flex items-center space-x-3 p-3 bg-indigo-50 rounded-xl">
+                    <div class="w-2 h-2 bg-indigo-600 rounded-full"></div>
+                    <span class="font-semibold text-gray-800">Posicionamiento Comercial</span>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 p-4 rounded-2xl">
+                <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 text-center">Especialidades Adicionales</h3>
+                <p class="text-center text-[12px] leading-loose text-gray-500 font-medium">
+                    Packaging • Videos • Copywriting • Meta Ads • Google Maps • WhatsApp Business • Fotografía • Impresos • Creativos • Reels • Fidelización
+                </p>
+            </div>
+
+            <button id="close-services" class="w-full mt-6 py-4 bg-indigo-600 text-white rounded-2xl font-bold shadow-lg">Cerrar</button>
+        </div>
+    </div>
+
+    <div id="gallery-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="font-serif-elegant text-xl font-bold mb-4 text-indigo-700 text-center">Portafolio</h2>
+            <div class="carousel-wrapper">
+                <div class="carousel-btn left-2" id="prev-btn" style="left: 10px;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                </div>
+                <div class="carousel-btn right-2" id="next-btn" style="right: 10px;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                </div>
+                <div class="carousel-container" id="carousel-container">
+                    <div class="carousel-slide"><img src="https://i.postimg.cc/hPMC06bk/Sin-titulo-(1080-x-1080-px)(1).png"></div>
+                    <div class="carousel-slide"><img src="https://i.postimg.cc/YSFfTsYm/Sin-titulo-(1080-x-1080-px).png"></div>
+                    <div class="carousel-slide"><img src="https://i.postimg.cc/qB9Ntv3R/Chat-GPT-Image-25-abr-2026-10-29-44.png"></div>
+                </div>
+            </div>
+            <div class="carousel-dots flex justify-center mt-3 gap-2" id="carousel-dots"></div>
+            <button id="close-gallery" class="w-full mt-6 py-3 bg-gray-100 rounded-xl font-bold">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- Calendar Agenda -->
+    <div id="agendamiento-modal" class="modal">
+        <div class="modal-content">
+            <h2 class="font-serif-elegant text-xl font-bold mb-4 text-indigo-700 text-center">Agendar Cita</h2>
+            
+            <div class="mb-4">
+                <div class="flex justify-between items-center mb-4">
+                    <button id="prev-month" class="p-1 hover:bg-gray-100 rounded">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+                    </button>
+                    <h3 id="calendar-month" class="font-bold text-gray-700 capitalize">Mayo 2026</h3>
+                    <button id="next-month" class="p-1 hover:bg-gray-100 rounded">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </button>
+                </div>
+                
+                <div class="grid grid-cols-7 gap-1 text-center text-[10px] font-bold text-gray-400 mb-2">
+                    <div>DOM</div><div>LUN</div><div>MAR</div><div>MIE</div><div>JUE</div><div>VIE</div><div>SAB</div>
+                </div>
+                <div id="calendar-days" class="calendar-grid"></div>
+            </div>
+
+            <div id="time-selection" class="hidden">
+                <h4 class="text-xs font-bold text-gray-500 mb-3 uppercase tracking-wider">Horarios Disponibles</h4>
+                <div class="grid grid-cols-3 gap-2" id="time-slots-container">
+                    <!-- Horarios generados dinámicamente -->
+                </div>
+            </div>
+
+            <button id="confirm-booking" class="hidden w-full mt-6 py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">Confirmar en WhatsApp</button>
+            <button id="close-agenda" class="w-full mt-3 py-3 bg-gray-100 rounded-xl font-bold">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- QR -->
+    <div id="qr-modal" class="modal">
+        <div class="modal-content text-center">
+            <h2 class="font-bold mb-4">Escanea para Guardar</h2>
+            <div class="bg-gray-100 p-4 rounded-xl inline-block mx-auto">
+                <img src="https://i.postimg.cc/ncKjmtZh/Diseno-sin-titulo(16).png" class="w-48 h-48">
+            </div>
+            <button id="close-qr" class="w-full mt-6 py-3 bg-gray-100 rounded-xl font-bold">Cerrar</button>
+        </div>
+    </div>
+
+    <script>
+        const setupModal = (btnId, modalId, closeBtnId) => {
+            const btn = document.getElementById(btnId);
+            const modal = document.getElementById(modalId);
+            const closeBtn = document.getElementById(closeBtnId);
+            if (btn && modal) {
+                btn.onclick = () => { modal.style.display = 'block'; };
+                if (closeBtn) closeBtn.onclick = () => { modal.style.display = 'none'; };
+                window.addEventListener('click', (e) => { if (e.target == modal) modal.style.display = 'none'; });
+            }
+        };
+
+        // Carousel Logic
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const container = document.getElementById('carousel-container');
+        const dots = document.getElementById('carousel-dots');
+        
+        slides.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.classList.add('dot');
+            if(i === 0) dot.classList.add('active');
+            dot.onclick = () => { currentSlide = i; updateCarousel(); };
+            dots.appendChild(dot);
+        });
+
+        function updateCarousel() {
+            if (container) {
+                container.style.transform = `translateX(-${currentSlide * 100}%)`;
+                document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+            }
+        }
+
+        document.getElementById('next-btn').onclick = () => { currentSlide = (currentSlide + 1) % slides.length; updateCarousel(); };
+        document.getElementById('prev-btn').onclick = () => { currentSlide = (currentSlide - 1 + slides.length) % slides.length; updateCarousel(); };
+
+        // Real Dynamic Calendar Logic
+        let currentViewDate = new Date(2026, 4, 1); 
+        let selectedDate = null;
+        let selectedTimeStr = null;
+
+        function renderCalendar() {
+            const calendarDays = document.getElementById('calendar-days');
+            const monthLabel = document.getElementById('calendar-month');
+            const year = currentViewDate.getFullYear();
+            const month = currentViewDate.getMonth();
+            
+            const monthNames = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
+            monthLabel.innerText = `${monthNames[month]} ${year}`;
+
+            calendarDays.innerHTML = '';
+            
+            const firstDayOfMonth = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDayOfMonth; i++) {
+                const emptyDiv = document.createElement('div');
+                emptyDiv.className = 'calendar-day empty';
+                calendarDays.appendChild(emptyDiv);
+            }
+
+            const today = new Date();
+            const isCurrentMonth = today.getFullYear() === year && today.getMonth() === month;
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const day = document.createElement('div');
+                day.className = 'calendar-day';
+                day.innerText = i;
+                
+                if (isCurrentMonth && i === today.getDate()) {
+                    day.classList.add('today');
+                }
+
+                day.onclick = () => {
+                    document.querySelectorAll('.calendar-day').forEach(d => d.classList.remove('selected'));
+                    day.classList.add('selected');
+                    selectedDate = `${i} de ${monthNames[month]} ${year}`;
+                    
+                    renderTimeSlots();
+                    document.getElementById('time-selection').classList.remove('hidden');
+                    document.getElementById('confirm-booking').classList.add('hidden');
+                };
+                calendarDays.appendChild(day);
+            }
+        }
+
+        function renderTimeSlots() {
+            const container = document.getElementById('time-slots-container');
+            container.innerHTML = '';
+            
+            const times = [
+                "09:00 AM", "10:00 AM", "11:00 AM", "12:00 PM", 
+                "01:00 PM", "02:00 PM", "03:00 PM"
+            ];
+
+            times.forEach(time => {
+                const slot = document.createElement('div');
+                slot.className = 'time-slot';
+                slot.innerText = time;
+                slot.onclick = () => selectTime(slot);
+                container.appendChild(slot);
+            });
+        }
+
+        document.getElementById('prev-month').onclick = () => {
+            currentViewDate.setMonth(currentViewDate.getMonth() - 1);
+            renderCalendar();
+        };
+
+        document.getElementById('next-month').onclick = () => {
+            currentViewDate.setMonth(currentViewDate.getMonth() + 1);
+            renderCalendar();
+        };
+
+        window.selectTime = (el) => {
+            document.querySelectorAll('.time-slot').forEach(s => s.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedTimeStr = el.innerText;
+            document.getElementById('confirm-booking').classList.remove('hidden');
+        };
+
+        document.getElementById('confirm-booking').onclick = () => {
+            const msg = `Hola Luis Fernando, me gustaría agendar una cita para el día ${selectedDate} a las ${selectedTimeStr}.`;
+            window.open(`https://wa.me/573178018593?text=${encodeURIComponent(msg)}`, '_blank');
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            setupModal('services-btn', 'services-modal', 'close-services');
+            setupModal('gallery-btn', 'gallery-modal', 'close-gallery');
+            setupModal('qr-btn', 'qr-modal', 'close-qr');
+            setupModal('agendamiento-btn', 'agendamiento-modal', 'close-agenda');
+            renderCalendar();
+            
+            document.getElementById('save-contact-btn').onclick = () => {
+                const vCard = "BEGIN:VCARD\nVERSION:3.0\nFN:Luis Fernando Obando\nTEL:3178018593\nEMAIL:trinitario14fer333@gmail.com\nEND:VCARD";
+                const blob = new Blob([vCard], { type: 'text/vcard' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'LuisObando.vcf';
+                link.click();
+            };
+        });
+    </script>
+</body>
+</html>
